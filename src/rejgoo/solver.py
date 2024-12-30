@@ -1,4 +1,4 @@
-from newt_raph import solve_eqs
+from .newt_raph import solve_eqs
 import re
 
 def solve_systems(ordered_eqs, ordered_vars):

@@ -1,6 +1,5 @@
 from itertools import combinations
 
-
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def eqs_extractor(text):
@@ -30,9 +29,7 @@ def var_extractor(eq):
     
     return set(variables)
 
-
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
-
 
 def find_eqs_systems_labels(eqs, variables):
 
@@ -83,7 +80,6 @@ def seperate_eqs_systems(eqs, variables, group_labels, total_groups):
         var_sets.append(sub_vars)
 
     return eqs_sets, var_sets
-
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
@@ -173,18 +169,3 @@ def parser(text):
     return ordered_eqs, ordered_vars
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
-
-
-text ='''
-b + c = 8
-x + y + z = 4
-x + y = 3
-
-z + a = 6
-x = 1
-a + b = 9
-
-
-'''
-
-ordered_eqs, ordered_vars = parser(text)
