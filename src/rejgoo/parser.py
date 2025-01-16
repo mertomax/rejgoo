@@ -3,6 +3,17 @@ from itertools import combinations
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def eqs_extractor(text):
+    """
+    This function gets input equations as a single text,
+    and returns separated equations as a list.
+
+    Parameters:
+    text (str): input equations
+
+    Returns:
+    list: extracted equations
+    """
+    
     eqs = text.replace(' ', '')
     eqs = eqs.split('\n')
     eqs = [i for i in eqs if i !='']
@@ -16,6 +27,17 @@ def is_number(x):
         return False
 
 def var_extractor(eq):
+    """
+    This function gets an equation as a string,
+    and returns existing variables in the equation as a list
+
+    Parameters:
+    eq (str): input equation
+
+    Returns:
+    list: extracted variables.
+    """
+    
     math_ops = ('+', '-', '*', '/', '=', '(', ')')
     for op in math_ops:
         eq = eq.replace(op, ' ')
@@ -32,6 +54,22 @@ def var_extractor(eq):
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def find_eqs_systems_labels(eqs, variables):
+    """
+    This function gets a list of equations,
+    and a list of variables corresponding to each equation.
+
+    Then the function tries to group equations that have common variables together. 
+    And label each equation with an integer that shows which group the equation belongs to.
+
+    Parameters:
+    eqs (list): A list that contains all equations as string.
+    variables (list): A list of lists! The inner list contains variables as strings.
+        The i_th inner list contains variables of the i_th eq in the eqs.
+
+    Returns:
+    list: A list which its i_th element determines the group's label of i_th eq in eqs.
+    int: Number of total found groups 
+    """
 
     def track(var, label):
         nonlocal tracked_vars, group_labels
@@ -66,6 +104,11 @@ def find_eqs_systems_labels(eqs, variables):
     return group_labels, total_groups
 
 def seperate_eqs_systems(eqs, variables, group_labels, total_groups):
+    """
+    This function gets a bag of equations and tries to
+    separate them into different systems of equations,
+    with no common variable
+    """
     eqs_sets = []
     var_sets = []
 
@@ -84,6 +127,14 @@ def seperate_eqs_systems(eqs, variables, group_labels, total_groups):
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def cross_var(combined_vars, var_set):
+    """
+    In eqs_order_idx function, When a sub-system of equations is found,
+    the variable of the found sub-system needs to be omitted
+    from the list of total variables in the system.
+    This function does it and, omits the sub-system variables from
+    the list of all variables.
+    
+    """
     results = []
     
     for sub_var in var_set:
@@ -94,6 +145,10 @@ def cross_var(combined_vars, var_set):
 
 
 def eqs_order_idx(var_set):
+    """
+    This function provides labels, that show the priority of each equation.
+    The labels will be used in ordered_eqs_vars function.
+    """
     var_set = var_set[:]
     
     priority = [None for i in var_set]
@@ -130,6 +185,28 @@ def eqs_order_idx(var_set):
     return priority, priority_count
 
 def ordered_eqs_vars(eqs_sets, var_sets):
+    """
+    When there is a system of equations like:
+
+    X + Y = Z
+    X + Y = 5
+    X  + 1 = 2
+
+    We can solve all three of them simultaneously.
+    But the solving process will take a lot of time,
+    despite the simplisity of the system!
+
+    A better aporoah is to solve it step by step!
+    At first, we souled solve (X  + 1 = 2). now that we have
+    found the value of X, we cansolve (X + Y = 5).
+    and after all (X + Y = Z) can be solved.
+
+    Solving equations by order can improve solving time!
+
+    This function tries to order the input system of equations,
+    with returned label list from eqs_order_idx function.
+    """
+
     ordered_eqs = []
     ordered_vars = []
 
@@ -157,6 +234,12 @@ def ordered_eqs_vars(eqs_sets, var_sets):
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def parser(text):
+    """
+    This function uses all functions in the parser module,
+    and by getting a string that contains equations,
+    tries to parse and order equations to a standard format.
+    The result of the parser function can be used in the solver module
+    """
     eqs = eqs_extractor(text)
     variables = [var_extractor(eq) for eq in eqs]
 

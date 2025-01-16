@@ -2,6 +2,16 @@ import numpy as np
 import re
 
 def eq_to_cost(eqs):
+    """
+    This function gets a list of equations and then converts them to a list of cost_functions.
+
+    Parameters:
+    eqs (list): A list that contains equations as strings.
+
+    Returns:
+    list: A list that contains cost_functions as strings.
+    """
+    
     cost_fs = []
     for idx, eq in enumerate(eqs):
         equal_loc = eq.find('=')
@@ -12,6 +22,18 @@ def eq_to_cost(eqs):
 
 
 def residual(vars_val, cost_fs, vars_masks):
+    """
+    This function calculates values(residuals) of cost_functions.
+
+    Parameters:
+    vars_val ():
+    cost_fs ():
+    vars_masks ():
+    
+
+    Reterns:
+    NumPy array: An array that contains residuals of cost functions.
+    """
     res = []
     for cost in cost_fs:
         for var_m, var_val in zip(vars_masks, vars_val):
@@ -22,6 +44,17 @@ def residual(vars_val, cost_fs, vars_masks):
 
 
 def deriv(vars_val, cost_fs, vars_masks):
+    """
+    This function calculates derivatives of cost_fs
+
+    Parameters:
+    vars_val ():
+    cost_fs():
+    vars_masks (): A list of RegEx patterns, that select variables in equations strings.
+    
+    Returns:
+    NumPy array:
+    """
     res = np.zeros((len(cost_fs), len(vars_val)))
 
     for var_idx, var_val in enumerate(vars_val):
@@ -36,6 +69,19 @@ def deriv(vars_val, cost_fs, vars_masks):
 
 
 def newtraph(vars_val, cost_fs, vars_masks, max_iter=1000):
+    """
+    This function finds the root of cost_fs
+
+    Parameters:
+    vars_val ():
+    cost_fs ():
+    vars_masks ():
+    max_iter ():
+
+    Returns:
+    list :
+    """
+    
     for _ in range(max_iter):
         a = deriv(vars_val, cost_fs, vars_masks)
         b = residual(vars_val, cost_fs, vars_masks)
@@ -45,6 +91,17 @@ def newtraph(vars_val, cost_fs, vars_masks, max_iter=1000):
     return vars_val
 
 def solve_eqs(eqs, vars_id, init_vals={}):
+    """
+    This function solves the input equation by using other functions in newt_raph module.
+
+    Parameters:
+    eqs ():
+    vars_id ():
+    init_vals ():
+
+    Returns:
+    
+    """
     vars_val = [init_vals.get(i, np.random.rand())
             for i in vars_id]
     vars_val = np.array(vars_val)
