@@ -1,7 +1,7 @@
 from .newt_raph import solve_eqs
 import re
 
-def solve_systems(ordered_eqs, ordered_vars):
+def solve_systems(ordered_eqs, ordered_vars, init_vals=None):
     """
     This function uses other functions in the solver module and
     solves input system of parsed and ordered equations
@@ -9,7 +9,7 @@ def solve_systems(ordered_eqs, ordered_vars):
     systems_results = {}
 
     for system_eqs, system_vars in zip(ordered_eqs, ordered_vars):
-        results = solve_system(system_eqs, system_vars)
+        results = solve_system(system_eqs, system_vars, init_vals=init_vals)
         systems_results.update(results)
 
     systems_results = {key:float(value) for key, value in systems_results.items()}
@@ -31,7 +31,7 @@ def insert_solved_vars(eqs, solved_vars):
 
     return masked_eqs
 
-def solve_system(system_eqs, system_vars):
+def solve_system(system_eqs, system_vars, init_vals=None):
     """
     This function solves a system of equations,
     which is part of all systems of equations.
@@ -42,18 +42,18 @@ def solve_system(system_eqs, system_vars):
     for sub_eqs, sub_vars in zip(system_eqs, system_vars):
         sub_inserted_eqs = insert_solved_vars(sub_eqs, system_results)
         unsolved_vars = [var for var in sub_vars if var not in system_results.keys()]
-        results = solve_sub_system(sub_inserted_eqs, unsolved_vars)
+        results = solve_sub_system(sub_inserted_eqs, unsolved_vars, init_vals=init_vals)
         system_results.update(results)
 
     return system_results
 
-def solve_sub_system(eqs, vars_ids):
+def solve_sub_system(eqs, vars_ids, init_vals=None):
     """
     This solves a sub-system of equations,
     and return the results.
     """
     
-    values = solve_eqs(eqs, vars_ids)
+    values = solve_eqs(eqs, vars_ids, init_vals=init_vals)
     results = {key:value for key, value in zip(vars_ids, values)}
 
     return results

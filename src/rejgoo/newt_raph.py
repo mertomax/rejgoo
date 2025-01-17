@@ -90,7 +90,7 @@ def newtraph(vars_val, cost_fs, vars_masks, max_iter=1000):
     
     return vars_val
 
-def solve_eqs(eqs, vars_id, init_vals={}):
+def solve_eqs(eqs, vars_id, init_vals=None):
     """
     This function solves the input equation by using other functions in newt_raph module.
 
@@ -102,6 +102,11 @@ def solve_eqs(eqs, vars_id, init_vals={}):
     Returns:
     
     """
+    if init_vals:
+        init_vals = {key:float(value) for key, value in init_vals.items()}
+    else:
+        init_vals = {}
+    
     vars_val = [init_vals.get(i, np.random.rand())
             for i in vars_id]
     vars_val = np.array(vars_val)
