@@ -37,7 +37,7 @@ def residual(vars_val, cost_fs, vars_masks):
     res = []
     for cost in cost_fs:
         for var_m, var_val in zip(vars_masks, vars_val):
-            cost = re.sub(var_m, str(var_val), cost)
+            cost = re.sub(var_m, '({})'.format(str(var_val)), cost)
         res.append(eval(cost))
     
     return np.array(res)
