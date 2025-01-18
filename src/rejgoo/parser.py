@@ -232,23 +232,3 @@ def ordered_eqs_vars(eqs_sets, var_sets):
     return ordered_eqs, ordered_vars
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
-
-def parser(text):
-    """
-    This function uses all functions in the parser module,
-    and by getting a string that contains equations,
-    tries to parse and order equations to a standard format.
-    The result of the parser function can be used in the solver module
-    """
-    eqs = eqs_extractor(text)
-    variables = [var_extractor(eq) for eq in eqs]
-
-    group_labels, total_groups = find_eqs_systems_labels(eqs, variables)
-    eqs_sets, var_sets = seperate_eqs_systems(eqs, variables,
-                                              group_labels, total_groups)
-
-    ordered_eqs, ordered_vars = ordered_eqs_vars(eqs_sets, var_sets)
-
-    return ordered_eqs, ordered_vars
-
-#-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
