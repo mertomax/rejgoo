@@ -68,7 +68,7 @@ def deriv(vars_val, cost_fs, vars_masks):
     return res
 
 
-def newtraph(vars_val, cost_fs, vars_masks, max_iter=1000):
+def newtraph(vars_val, cost_fs, vars_masks, **kwargs):
     """
     This function finds the root of cost_fs
 
@@ -81,12 +81,15 @@ def newtraph(vars_val, cost_fs, vars_masks, max_iter=1000):
     Returns:
     list :
     """
+
+    max_iter = kwargs.get('max_iter', 100)
+    learning_rate = kwargs.get('learning_rate', 1)
     
     for _ in range(max_iter):
-        a = deriv(vars_val, cost_fs, vars_masks)
-        b = residual(vars_val, cost_fs, vars_masks)
-        delt = (np.linalg.inv(a) @ b)
-        vars_val -= delt
+        der = deriv(vars_val, cost_fs, vars_masks)
+        res = residual(vars_val, cost_fs, vars_masks)
+        delt = (np.linalg.inv(der) @ res)
+        vars_val -= delt * learning_rate
     
     return vars_val
 

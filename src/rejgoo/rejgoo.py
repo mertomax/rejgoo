@@ -27,13 +27,23 @@ class eqs():
             print('Total number of equations: {}'.format(len(eqs)))
             print('Total number of variables: {}'.format(len(variables)))
 
-            print('Number of isolated groups of equations: {}'.format(total_groups))
+            print('Number of isolated systems of equations: {}\n'.format(total_groups))
+
+            for system_idx, system in enumerate(self.ordered_eqs):
+
+                print('system number: _{}_'.format(system_idx))
+                print('number of equations in this system: {}\n'.format(len(eqs_sets[system_idx])))
+                print('solve\norder       equations')
+                print('--------------------------------------------------------------------')
+                for sub_system_idx, sub_system in enumerate(system):
+                    for eq in sub_system:
+                        print('{:4d}       {}'.format(sub_system_idx+1, eq))
+                print('-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n')
 
     def solve(self):
 
         settings_kws = ('init_vals',)
         settings = {key:value for key, value in self.kwargs.items() if key in settings_kws}
-        #print(settings)
         systems_results = {}
 
         for system_eqs, system_vars in zip(self.ordered_eqs, self.ordered_vars):
