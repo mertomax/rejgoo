@@ -51,4 +51,10 @@ class eqs():
             systems_results.update(results)
 
         systems_results = {key:float(value) for key, value in systems_results.items()}
+
+        if self.verbose:
+            print('Values of variables:\n')
+            for key, value in systems_results.items():
+                print('{}:    {}'.format(key, value))
+
         return systems_results
