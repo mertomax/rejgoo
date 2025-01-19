@@ -38,7 +38,7 @@ class eqs():
                 for sub_system_idx, sub_system in enumerate(system):
                     for eq in sub_system:
                         print('{:4d}       {}'.format(sub_system_idx+1, eq))
-                print('-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n')
+                print('-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n')
 
     def solve(self):
 

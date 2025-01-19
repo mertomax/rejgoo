@@ -1,4 +1,5 @@
 from itertools import combinations
+import re
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
@@ -37,6 +38,17 @@ def var_extractor(eq):
     Returns:
     list: extracted variables.
     """
+
+    eq.replace(' ', '')
+    math_funs = ('sin', 'asin', 'sinh', 'asinh',
+                 'cos', 'cosa', 'cosh', 'acosh',
+                 'tan', 'atan', 'tanh', 'atanh',
+                 'cot', 'acot', 'coth', 'acoth',
+                 'exp', 'log')
+
+    for math_fun in math_funs:
+        mask = r'(^|[\+\-*/=(]){}\('.format(math_fun)
+        eq = re.sub(mask, ' ', eq)
     
     math_ops = ('+', '-', '*', '/', '=', '(', ')')
     for op in math_ops:
