@@ -4,7 +4,14 @@ from .solver import *
 class eqs():
     def __init__(self, text, do_parse=True, do_solve=True, **kwargs):
         self.text = text
-        self.kwargs = kwargs
+
+        settings_kws = ('verbose', 'init_vals', 'max_iter', 'learning_rate')
+        
+        for key in kwargs.keys():
+            if key not in settings_kws:
+                raise ValueError('{} is not a valid keword argument!'.format(key))
+            
+        self.settings = kwargs
         self.verbose = kwargs.get('verbose', False)
 
         if do_parse:
@@ -42,12 +49,10 @@ class eqs():
 
     def solve(self):
 
-        settings_kws = ('init_vals',)
-        settings = {key:value for key, value in self.kwargs.items() if key in settings_kws}
         systems_results = {}
 
         for system_eqs, system_vars in zip(self.ordered_eqs, self.ordered_vars):
-            results = solve_system(system_eqs, system_vars, **settings)
+            results = solve_system(system_eqs, system_vars, **self.settings)
             systems_results.update(results)
 
         systems_results = {key:float(value) for key, value in systems_results.items()}
