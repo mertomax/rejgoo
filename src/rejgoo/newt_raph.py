@@ -91,8 +91,8 @@ def newtraph(vars_val, cost_fs, vars_masks, **kwargs):
         res = residual(vars_val, cost_fs, vars_masks)
         delt = (np.linalg.inv(der) @ res)
         vars_val -= delt * learning_rate
-    
-    return vars_val
+
+    return vars_val, res
 
 def solve_eqs(eqs, vars_id, **kwargs):
     """
@@ -119,6 +119,6 @@ def solve_eqs(eqs, vars_id, **kwargs):
 
     vars_masks = [r'(?<!\w)({})(?!\w)'.format(var_id) for var_id in vars_id]
     cost_fs = eq_to_cost(eqs)
-    results = newtraph(vars_val, cost_fs, vars_masks)
+    results, residuals = newtraph(vars_val, cost_fs, vars_masks, **kwargs)
 
-    return results
+    return results, residuals

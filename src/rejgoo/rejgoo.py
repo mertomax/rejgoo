@@ -4,6 +4,7 @@ from .solver import *
 class eqs():
     def __init__(self, text, do_parse=True, do_solve=True, **kwargs):
         self.text = text
+        self.do_solve = do_solve
 
         settings_kws = ('verbose', 'init_vals', 'max_iter', 'learning_rate')
         
@@ -41,15 +42,15 @@ class eqs():
         if self.verbose:
             print('Number of isolated systems of equations: {}\n'.format(total_groups))
             
-        eqs_sets, var_sets = seperate_eqs_systems(eqs, eqs_vars,
+        self.eqs_sets, self.var_sets = seperate_eqs_systems(eqs, eqs_vars,
                                                   group_labels, total_groups)
 
-        self.ordered_eqs, self.ordered_vars = ordered_eqs_vars(eqs_sets, var_sets)
+        self.ordered_eqs, self.ordered_vars = ordered_eqs_vars(self.eqs_sets, self.var_sets)
 
-        if self.verbose:
+        if self.verbose and  not self.do_solve:
             for system_idx, system in enumerate(self.ordered_eqs):
                 print('system number: _{}_'.format(system_idx+1))
-                print('number of equations in this system: {}\n'.format(len(eqs_sets[system_idx])))
+                print('number of equations in this system: {}\n'.format(len(self.eqs_sets[system_idx])))
                 print('solve\norder       equations')
                 print('--------------------------------------------------------------------')
                 for sub_system_idx, sub_system in enumerate(system):
@@ -60,17 +61,30 @@ class eqs():
 
     def solve(self):
 
-        systems_results = {}
+        solved_vars = {}
+        systems_residuals = []
 
         for system_eqs, system_vars in zip(self.ordered_eqs, self.ordered_vars):
-            results = solve_system(system_eqs, system_vars, **self.settings)
-            systems_results.update(results)
+            results, system_residuals = solve_system(system_eqs, system_vars, **self.settings)
+            solved_vars.update(results)
+            systems_residuals.append(system_residuals)
 
-        systems_results = {key:float(value) for key, value in systems_results.items()}
+        self.solved_vars = solved_vars
+        self.systems_residuals = systems_residuals
 
-        if self.verbose:
+        if self.verbose and self.do_solve:
+            for system_idx, system in enumerate(self.ordered_eqs):
+                print('system number: _{}_'.format(system_idx+1))
+                print('number of equations in this system: {}\n'.format(len(self.eqs_sets[system_idx])))
+                print('solve\norder     residual       equations')
+                print('--------------------------------------------------------------------')
+                for sub_system_idx, sub_system in enumerate(system):
+                    for eq, res in zip(sub_system, systems_residuals[system_idx][sub_system_idx]):
+                        print('{:4d}       {:.5f}       {}'.format(sub_system_idx+1, res, eq))
+                print('-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_\n')
+
             print('Values of variables:\n')
-            for key, value in systems_results.items():
+            for key, value in solved_vars.items():
                 print('{}:    {}'.format(key, value))
 
-        return systems_results
+        return solved_vars

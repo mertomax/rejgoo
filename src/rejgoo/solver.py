@@ -23,14 +23,16 @@ def solve_system(system_eqs, system_vars, **kwargs):
     The system may contain several sub-systems that should be solved by order.
     """
     system_results = {}
+    system_residuals = []
 
     for sub_eqs, sub_vars in zip(system_eqs, system_vars):
         sub_inserted_eqs = insert_solved_vars(sub_eqs, system_results)
         unsolved_vars = [var for var in sub_vars if var not in system_results.keys()]
-        results = solve_sub_system(sub_inserted_eqs, unsolved_vars, **kwargs)
+        results, cost_residuals = solve_sub_system(sub_inserted_eqs, unsolved_vars, **kwargs)
         system_results.update(results)
+        system_residuals.append(cost_residuals)
 
-    return system_results
+    return system_results, system_residuals
 
 def solve_sub_system(eqs, vars_ids, **kwargs):
     """
@@ -38,7 +40,7 @@ def solve_sub_system(eqs, vars_ids, **kwargs):
     and return the results.
     """
     
-    values = solve_eqs(eqs, vars_ids, **kwargs)
+    values, cost_residuals = solve_eqs(eqs, vars_ids, **kwargs)
     results = {key:value for key, value in zip(vars_ids, values)}
 
-    return results
+    return results, cost_residuals
