@@ -134,6 +134,21 @@ def seperate_eqs_systems(eqs, variables, group_labels, total_groups):
         eqs_sets.append(sub_eq)
         var_sets.append(sub_vars)
 
+    for eqs_set, var_set in zip(eqs_sets, var_sets):
+        
+        merged_vars = []
+        for variables in var_set:
+            merged_vars.extend(variables)
+        merged_vars = set(merged_vars)
+
+        if len(eqs_set) != len(merged_vars):
+            print('The folwing system of equations consists of {} equations and {} variables!'\
+                  .format(len(eqs_set), len(merged_vars)))
+            print('It can not be solved!\n')
+            for eq in eqs_set:
+                print(eq)
+            raise Warning('variables and equations does not match!')
+
     return eqs_sets, var_sets
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
@@ -174,7 +189,7 @@ def eqs_order_idx(var_set):
     while None in priority:
         
         if comb_size > max_size:
-            raise Exception('variables and equations does not match')
+            raise Exception('variables and equations does not match!')
         
         combs = combinations(var_set_idx, comb_size)
         
