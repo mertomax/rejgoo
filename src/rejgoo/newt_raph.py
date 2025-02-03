@@ -112,6 +112,9 @@ def solve_eqs(eqs, vars_id, **kwargs):
         init_vals = {key:float(value) for key, value in init_vals.items()}
     else:
         init_vals = {}
+
+    if 'random_seed' in kwargs.keys():
+        np.random.seed(kwargs['random_seed'])
     
     vars_val = [init_vals.get(i, np.random.rand())
             for i in vars_id]

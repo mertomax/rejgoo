@@ -6,7 +6,7 @@ class eqs():
         self.text = text
         self.do_solve = do_solve
 
-        settings_kws = ('verbose', 'init_vals', 'max_iter', 'learning_rate')
+        settings_kws = ('verbose', 'init_vals', 'max_iter', 'learning_rate', 'random_seed')
         
         for key in kwargs.keys():
             if key not in settings_kws:
