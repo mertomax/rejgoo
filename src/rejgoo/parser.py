@@ -196,7 +196,11 @@ def eqs_order_idx(var_set):
         for comb in combs:
             combined_vars = []
             for i in comb:
+                if var_set[i] == []:
+                    combined_vars = []
+                    break
                 combined_vars.extend(var_set[i])
+                
             combined_vars = set(combined_vars)
             if len(combined_vars) == comb_size:
                 var_set = cross_var(combined_vars, var_set)
