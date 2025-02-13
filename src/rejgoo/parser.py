@@ -41,7 +41,7 @@ def var_extractor(eq):
 
     eq.replace(' ', '')
     math_funs = ('sin', 'asin', 'sinh', 'asinh',
-                 'cos', 'cosa', 'cosh', 'acosh',
+                 'cos', 'acos', 'cosh', 'acosh',
                  'tan', 'atan', 'tanh', 'atanh',
                  'cot', 'acot', 'coth', 'acoth',
                  'exp', 'log')

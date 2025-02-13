@@ -10,7 +10,7 @@ def tan(x):
     return math.tan(math.radians(x))
 
 def cot(x):
-    return math.cot(math.radians(x))
+    return math.cos(math.radians(x)) / math.sin(math.radians(x))
 
 def asin(x):
     return math.degrees(math.asin(x))
@@ -22,31 +22,31 @@ def atan(x):
     return math.degrees(math.atan(x))
 
 def acot(x):
-    return math.degrees(math.acot(x))
+    return math.degrees(math.atan(1/x))
 
 def sinh(x):
-    return math.sinh(math.radians(x))
+    return math.sinh(x)
 
 def cosh(x):
-    return math.cosh(math.radians(x))
+    return math.cosh(x)
 
 def tanh(x):
-    return math.tanh(math.radians(x))
+    return math.tanh(x)
 
 def coth(x):
-    return math.coth(math.radians(x))
+    return math.cosh(x) / math.sinh(x)
 
 def asinh(x):
-    return math.degrees(math.asinh(x))
+    return math.asinh(x)
 
 def acosh(x):
-    return math.degrees(math.acosh(x))
+    return math.acosh(x)
 
 def atanh(x):
-    return math.degrees(math.atanh(x))
+    return math.atanh(x)
 
 def acoth(x):
-    return math.degrees(math.acoth(x))
+    return math.atanh(1/x)
 
 def exp(x):
     return math.exp(x)
