@@ -255,7 +255,10 @@ def ordered_eqs_vars(eqs_sets, var_sets):
                     sub_vars.extend(var_set[idx])
                     
             sub_ord_eqs.append(sub_eqs)
-            sub_ord_vars.append(list(set(sub_vars)))
+
+            sub_vars = list(set(sub_vars))
+            sub_vars.sort()
+            sub_ord_vars.append(sub_vars)
             
         ordered_eqs.append(sub_ord_eqs)
         ordered_vars.append(sub_ord_vars)
