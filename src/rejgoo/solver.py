@@ -37,7 +37,7 @@ def solve_system(system_eqs, system_vars, **kwargs):
 def solve_sub_system(eqs, vars_ids, **kwargs):
     """
     This solves a sub-system of equations,
-    and return the results.
+    and returns the results.
     """
     
     values, cost_residuals = solve_eqs(eqs, vars_ids, **kwargs)

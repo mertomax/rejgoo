@@ -2,6 +2,10 @@ from .parser import *
 from .solver import *
 
 class eqs():
+    """
+    The eqs class is the only thing that you need to import from this package.
+    it gets equations as an attribute and perform parsing and solving.
+    """
     def __init__(self, text, do_parse=True, do_solve=True, **kwargs):
         self.text = text
         self.do_solve = do_solve
@@ -22,6 +26,10 @@ class eqs():
             self.vars_vals = self.solve()
 
     def parse(self):
+        """
+        This function uses all fynctions from parser module to preform parsing on input equations.
+        """
+        
         eqs = eqs_extractor(self.text)
  
         eqs_vars = [var_extractor(eq) for eq in eqs]
@@ -60,6 +68,9 @@ class eqs():
 
 
     def solve(self):
+        """
+        This function uses all functions inside solver module to perform solving on parsed equations.
+        """
 
         solved_vars = {}
         systems_residuals = []

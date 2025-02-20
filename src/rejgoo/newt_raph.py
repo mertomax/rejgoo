@@ -27,9 +27,9 @@ def residual(vars_val, cost_fs, vars_masks):
     This function calculates values(residuals) of cost_functions.
 
     Parameters:
-    vars_val ():
-    cost_fs ():
-    vars_masks ():
+    vars_val (NumPy array):
+    cost_fs (List):
+    vars_masks (List):
     
 
     Reterns:
@@ -49,12 +49,12 @@ def deriv(vars_val, cost_fs, vars_masks):
     This function calculates derivatives of cost_fs
 
     Parameters:
-    vars_val ():
-    cost_fs():
-    vars_masks (): A list of RegEx patterns, that select variables in equations strings.
+    vars_val (NumPy array):
+    cost_fs(List):
+    vars_masks (List): A list of RegEx patterns, that select variables in equations strings.
     
     Returns:
-    NumPy array:
+    NumPy array: An array that contains derivatives of cost functions.
     """
     res = np.zeros((len(cost_fs), len(vars_val)))
 
@@ -74,13 +74,13 @@ def newtraph(vars_val, cost_fs, vars_masks, **kwargs):
     This function finds the root of cost_fs
 
     Parameters:
-    vars_val ():
-    cost_fs ():
-    vars_masks ():
-    max_iter ():
+    vars_val (NumPy array):
+    cost_fs (List):
+    vars_masks (List):
 
     Returns:
-    list :
+    NumPy array : Solved values of variables.
+    NumPy array : Residuals of cost functions.
     """
 
     max_iter = kwargs.get('max_iter', 100)
@@ -99,12 +99,13 @@ def solve_eqs(eqs, vars_id, **kwargs):
     This function solves the input equation by using other functions in newt_raph module.
 
     Parameters:
-    eqs ():
-    vars_id ():
-    init_vals ():
+    eqs (List):
+    vars_id (List):
+    init_vals (Boolean):
 
     Returns:
-    
+    NumPy array : Solved values of variables.
+    NumPy array : Residuals of cost functions.
     """
 
     init_vals = kwargs.get('init_vals', False)
