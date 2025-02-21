@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rejgoo"
-version = "0.0.2"
+version = "0.0.3"
 description = "Python package that solves mathematical equations"
 readme = "README.rst"
+requires-python = ">= 3.10"
 authors = [
   {name = "Mahdi Hajebi", email = "merto071@yahoo.com"}
 ]
@@ -18,7 +19,8 @@ classifiers = [
 ]
 license = {text = "MIT license"}
 dependencies = [
-  "numpy>=2.2.1"
+    "numpy (>=2.2.3,<3.0.0)"
+
 ]
 
 [project.optional-dependencies]
