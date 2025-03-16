@@ -18,6 +18,12 @@ Rejgoo is a Python package that solves mathematical equations!
 The main aim of rejgoo is too be the fastest and simplest way to solve system of mathematical equations.
 You can solve any number of equation with just one line of code!
 
+CREDITS:
+--------
+
+This project is developed by Mehdi Hajebi, based on the original version developed as his bachelor final project,
+titled "Thermodynamics Equation Set Solver", to fulfill for his BSc in mechanical engineering
+at University of Hormozgan under the supervision of Inst. Abdulhamid N.M. Ansari.
 
 HOW TO USE:
 -----------
