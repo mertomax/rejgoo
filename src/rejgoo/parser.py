@@ -39,6 +39,7 @@ def var_extractor(eq):
     list: extracted variables.
     """
 
+    # Extracting mathematical variables from it's function:
     eq.replace(' ', '')
     math_funs = ('sin', 'asin', 'sinh', 'asinh',
                  'cos', 'acos', 'cosh', 'acosh',
@@ -49,7 +50,24 @@ def var_extractor(eq):
     for math_fun in math_funs:
         mask = r'(^|[\+\-*/=(]){}\('.format(math_fun)
         eq = re.sub(mask, ' ', eq)
-    
+
+    # Extracting thermodynamic variables from it's function:
+    parsed_thermo_params = []
+
+    mask = r'thermo\((.*?)\)\.\w+'
+    thermo_params = re.findall(mask, eq)
+    for item in thermo_params:
+        parsed_thermo_params.extend(item.split(',')[1:])
+
+    parsed_thermo_params = [item.split('=')[-1] for item in parsed_thermo_params]
+
+    mask = r'thermo\(.*?\)\.\w+'
+    eq = re.sub(mask, ' ', eq)
+
+    for param in parsed_thermo_params:
+        eq = eq + ' ' + param
+
+    # Omiting non-variables:
     math_ops = ('+', '-', '*', '/', '=', '(', ')')
     for op in math_ops:
         eq = eq.replace(op, ' ')
@@ -63,6 +81,40 @@ def var_extractor(eq):
     
     return set(variables)
 
+#-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
+
+def coolprop_transformer(eqs):
+
+    map_dict = {}
+
+    for eq in eqs:
+        pattern = r'thermo\(.*?\)\.\w+'
+        finded_paterns = re.findall(pattern, eq)
+        for finded_patern in finded_paterns:
+            property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
+            params = re.findall(r'thermo\((.*?)\)\.\w+', finded_patern)[0]
+            fluid = params.split(',')[0]
+            params = params.split(',')[1:]
+            if len(params) != 2:
+                raise Exception("""You must provide 2 parameters to thermo functions
+                                but you have provided {}, in the {}""".
+                                format(len(params), finded_patern))
+            
+            params1, params2 = params
+            params1_id, params1_val = params1.split('=')
+            params2_id, params2_val = params2.split('=')
+
+            transformed_pattern = "CoolProp.PropsSI('{}', '{}', {}, '{}', {}, '{}')"
+            transformed_pattern = transformed_pattern.format(property,
+                                                params1_id, params1_val,
+                                                params2_id, params2_val,
+                                                fluid)
+
+            map_dict[finded_patern] = transformed_pattern
+
+    return map_dict
+
+    
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def find_eqs_systems_labels(eqs, variables):

@@ -1,4 +1,5 @@
 from .riazi import *
+from CoolProp import CoolProp
 import numpy as np
 import re
 

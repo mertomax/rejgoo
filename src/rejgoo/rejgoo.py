@@ -39,6 +39,8 @@ class eqs():
             all_vars.extend(eq_vars)
         all_vars = set(all_vars)
 
+        self.coolprop_map_dict = coolprop_transformer(eqs)
+
         if self.verbose:
             print('Total number of equations: {}'.format(len(eqs)))
             print('Total number of variables: {}'.format(len(all_vars)))
@@ -76,7 +78,8 @@ class eqs():
         systems_residuals = []
 
         for system_eqs, system_vars in zip(self.ordered_eqs, self.ordered_vars):
-            results, system_residuals = solve_system(system_eqs, system_vars, **self.settings)
+            results, system_residuals = solve_system(system_eqs, system_vars,
+                                                     self.coolprop_map_dict, **self.settings)
             solved_vars.update(results)
             systems_residuals.append(system_residuals)
 

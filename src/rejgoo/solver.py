@@ -1,6 +1,18 @@
 from .newt_raph import solve_eqs
 import re
 
+def coolprop_formater(eqs, map_dict):
+
+    formated_eqs = []
+
+    for eq in eqs:
+        for pattern, formated_pattern in map_dict.items():
+            if pattern in eq:
+                eq = eq.replace(pattern, formated_pattern)
+        formated_eqs.append(eq)
+
+    return formated_eqs
+
 def insert_solved_vars(eqs, solved_vars):
     """
     IF the value of a variable is optimized,
@@ -10,13 +22,13 @@ def insert_solved_vars(eqs, solved_vars):
 
     for eq in eqs:
         for var_id, var_val in solved_vars.items():
-            mask = r'(?<!\w)({})(?!\w)'.format(var_id)
+            mask = r"""(?<![\w_'"]){}(?![\w_'"])""".format(var_id)
             eq = re.sub(mask, str(var_val), eq)
         masked_eqs.append(eq)
 
     return masked_eqs
 
-def solve_system(system_eqs, system_vars, **kwargs):
+def solve_system(system_eqs, system_vars, coolprop_map_dict, **kwargs):
     """
     This function solves a system of equations,
     which is part of all systems of equations.
@@ -26,6 +38,7 @@ def solve_system(system_eqs, system_vars, **kwargs):
     system_residuals = []
 
     for sub_eqs, sub_vars in zip(system_eqs, system_vars):
+        sub_eqs = coolprop_formater(sub_eqs, coolprop_map_dict)
         sub_inserted_eqs = insert_solved_vars(sub_eqs, system_results)
         unsolved_vars = [var for var in sub_vars if var not in system_results.keys()]
         results, cost_residuals = solve_sub_system(sub_inserted_eqs, unsolved_vars, **kwargs)
