@@ -1,4 +1,5 @@
 from itertools import combinations
+from CoolProp import CoolProp 
 import re
 
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
@@ -85,6 +86,10 @@ def var_extractor(eq):
 
 def coolprop_transformer(eqs):
 
+    CP_fluids = CoolProp.get_global_param_string("FluidsList").split(',')
+    CP_fluids.append('HumidAir')
+    CP_fluids_lower_to_origin = {fluid.lower():fluid for fluid in CP_fluids}
+
     map_dict = {}
 
     for eq in eqs:
@@ -93,22 +98,35 @@ def coolprop_transformer(eqs):
         for finded_patern in finded_paterns:
             property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
             params = re.findall(r'thermo\((.*?)\)\.\w+', finded_patern)[0]
-            fluid = params.split(',')[0]
-            params = params.split(',')[1:]
-            if len(params) != 2:
-                raise Exception("""You must provide 2 parameters to thermo functions
-                                but you have provided {}, in the {}""".
-                                format(len(params), finded_patern))
-            
-            params1, params2 = params
-            params1_id, params1_val = params1.split('=')
-            params2_id, params2_val = params2.split('=')
 
-            transformed_pattern = "CoolProp.PropsSI('{}', '{}', {}, '{}', {}, '{}')"
-            transformed_pattern = transformed_pattern.format(property,
-                                                params1_id, params1_val,
-                                                params2_id, params2_val,
-                                                fluid)
+            parsed_fluid = params.split(',')[0]
+            if parsed_fluid.lower() not in CP_fluids_lower_to_origin.keys():
+                raise Exception('{} is not a valid fluid name!'.format(parsed_fluid))
+            fluid = CP_fluids_lower_to_origin[parsed_fluid.lower()]
+            params = params.split(',')[1:]
+
+            if fluid == 'HumidAir':
+                if len(params) != 3:
+                    raise Exception("""You must provide 3 parameters for {}
+                                but you have provided {}, in the {}""".
+                                format(fluid, len(params), finded_patern))
+
+            elif len(params) != 2:
+                raise Exception("""You must provide 2 parameters for {}
+                                but you have provided {}, in the {}""".
+                                format(fluid, len(params), finded_patern))
+            
+            if fluid == 'HumidAir':
+                transformed_pattern = "CoolProp.HAPropsSI('{}', ".format(property)
+            else:
+                transformed_pattern = "CoolProp.PropsSI('{}', ".format(property)
+            for param in params:
+                parm_id, parm_val = param.split('=')
+                transformed_pattern += "'{}', {}, ".format(parm_id, parm_val)
+            if fluid =='HumidAir':
+                transformed_pattern += ")"
+            else:
+                transformed_pattern += "'{}')".format(fluid)
 
             map_dict[finded_patern] = transformed_pattern
 
