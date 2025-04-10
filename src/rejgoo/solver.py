@@ -1,5 +1,8 @@
 from .newt_raph import solve_eqs
+from .parser import var_extractor, thermo_finder
 import re
+from CoolProp import CoolProp
+
 
 def coolprop_formater(eqs, map_dict):
 
@@ -12,6 +15,49 @@ def coolprop_formater(eqs, map_dict):
         formated_eqs.append(eq)
 
     return formated_eqs
+
+def thermo_val_initializer(eqs, solved_vars):
+
+    thermo_init_vals = {}
+    
+    if len(eqs) != 1:
+        return {}
+    else:
+        eq = eqs[0]
+
+    from .rejgoo import eqs as eqs_solver
+
+    CP_fluids = CoolProp.get_global_param_string("FluidsList").split(',')
+    CP_fluids.append('HumidAir')
+    CP_fluids_lower_to_origin = {fluid.lower():fluid for fluid in CP_fluids}
+    
+    thermo_funs_dict = thermo_finder(eq)
+    for finded_patern, all_params in thermo_funs_dict.items():
+        property = all_params['property']
+
+        parsed_fluid = all_params['fluid']
+        if parsed_fluid.lower() not in CP_fluids_lower_to_origin.keys():
+            raise Exception('{} is not a valid fluid name!'.format(parsed_fluid))
+        fluid = CP_fluids_lower_to_origin[parsed_fluid.lower()]
+        if fluid == 'HumidAir':
+            fluid = 'Air'
+
+        params_args = all_params['params_args']
+
+        for param, arg in params_args.items():
+            print(arg, type(arg), '---')
+            arg = insert_solved_vars([arg], solved_vars)[0]
+            print(arg, '=====')
+            print(insert_solved_vars([arg], solved_vars))
+            if len(var_extractor(arg)) == 1:
+                min_val = CoolProp.PropsSI('{}min'.format(param), fluid)
+                max_val = CoolProp.PropsSI('{}max'.format(param), fluid)
+                avr_val = (min_val + max_val) / 1
+                results = eqs_solver('{} = {}'.format(avr_val, arg), verbose=False)
+                thermo_init_vals.update(results.solved_vars)
+
+
+    return thermo_init_vals
 
 def insert_solved_vars(eqs, solved_vars):
     """
@@ -38,6 +84,8 @@ def solve_system(system_eqs, system_vars, coolprop_map_dict, **kwargs):
     system_residuals = []
 
     for sub_eqs, sub_vars in zip(system_eqs, system_vars):
+        thermo_init_vals = thermo_val_initializer(sub_eqs, system_results)
+        kwargs['thermo_init_vals'] = thermo_init_vals
         sub_eqs = coolprop_formater(sub_eqs, coolprop_map_dict)
         sub_inserted_eqs = insert_solved_vars(sub_eqs, system_results)
         unsolved_vars = [var for var in sub_vars if var not in system_results.keys()]

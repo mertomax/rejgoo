@@ -27,6 +27,32 @@ def is_number(x):
         return True
     except:
         return False
+    
+def thermo_finder(eq):
+    
+    thermo_funs_dict = {}
+    pattern = r'thermo\(.*?\)\.\w+'
+    finded_paterns = re.findall(pattern, eq)
+
+    for finded_patern in finded_paterns:
+
+        if len(re.findall(pattern, finded_patern[6:])) != 0:
+            raise Exception("Using nested termo functions is not possible!")
+        
+        property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
+        all_params = re.findall(r'thermo\((.*?)\)\.\w+', finded_patern)[0]
+        all_params = all_params.split(',')
+        fluid = all_params[0]
+        input_params_and_args = all_params[1:]
+        input_params = [param.split('=')[0] for param in input_params_and_args]
+        input_args = [arg.split('=')[1] for arg in input_params_and_args]
+        input_params_to_args = {param:arg for param, arg in zip(input_params, input_args)}
+        
+        all_params_dict = {'fluid':fluid, 'property':property, 'params_args':input_params_to_args}
+        thermo_funs_dict[finded_patern] = all_params_dict
+
+    return thermo_funs_dict
+
 
 def var_extractor(eq):
     """
@@ -53,20 +79,13 @@ def var_extractor(eq):
         eq = re.sub(mask, ' ', eq)
 
     # Extracting thermodynamic variables from it's function:
-    parsed_thermo_params = []
 
-    mask = r'thermo\((.*?)\)\.\w+'
-    thermo_params = re.findall(mask, eq)
-    for item in thermo_params:
-        parsed_thermo_params.extend(item.split(',')[1:])
+    thermo_funs_dict = thermo_finder(eq)
+    for thermo_fun, prop_dict in thermo_funs_dict.items():
+        eq = eq.replace(thermo_fun, ' ')
+        for arg in prop_dict['params_args'].values():
+            eq = eq + ' ' + arg
 
-    parsed_thermo_params = [item.split('=')[-1] for item in parsed_thermo_params]
-
-    mask = r'thermo\(.*?\)\.\w+'
-    eq = re.sub(mask, ' ', eq)
-
-    for param in parsed_thermo_params:
-        eq = eq + ' ' + param
 
     # Omiting non-variables:
     math_ops = ('+', '-', '*', '/', '=', '(', ')')
@@ -93,36 +112,37 @@ def coolprop_transformer(eqs):
     map_dict = {}
 
     for eq in eqs:
-        pattern = r'thermo\(.*?\)\.\w+'
-        finded_paterns = re.findall(pattern, eq)
-        for finded_patern in finded_paterns:
-            property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
-            params = re.findall(r'thermo\((.*?)\)\.\w+', finded_patern)[0]
+        thermo_funs_dict = thermo_finder(eq)
 
-            parsed_fluid = params.split(',')[0]
+        for finded_patern, all_params in thermo_funs_dict.items():
+            property = all_params['property']
+
+            parsed_fluid = all_params['fluid']
             if parsed_fluid.lower() not in CP_fluids_lower_to_origin.keys():
                 raise Exception('{} is not a valid fluid name!'.format(parsed_fluid))
             fluid = CP_fluids_lower_to_origin[parsed_fluid.lower()]
-            params = params.split(',')[1:]
+
+            params_args = all_params['params_args']
 
             if fluid == 'HumidAir':
-                if len(params) != 3:
+                if len(params_args) != 3:
                     raise Exception("""You must provide 3 parameters for {}
                                 but you have provided {}, in the {}""".
-                                format(fluid, len(params), finded_patern))
+                                format(fluid, len(params_args), finded_patern))
 
-            elif len(params) != 2:
+            elif len(params_args) != 2:
                 raise Exception("""You must provide 2 parameters for {}
                                 but you have provided {}, in the {}""".
-                                format(fluid, len(params), finded_patern))
+                                format(fluid, len(params_args), finded_patern))
             
             if fluid == 'HumidAir':
                 transformed_pattern = "CoolProp.HAPropsSI('{}', ".format(property)
             else:
                 transformed_pattern = "CoolProp.PropsSI('{}', ".format(property)
-            for param in params:
-                parm_id, parm_val = param.split('=')
-                transformed_pattern += "'{}', {}, ".format(parm_id, parm_val)
+
+            for param, arg in params_args.items():
+                transformed_pattern += "'{}', {}, ".format(param, arg)
+
             if fluid =='HumidAir':
                 transformed_pattern += ")"
             else:
