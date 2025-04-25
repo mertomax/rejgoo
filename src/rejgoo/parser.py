@@ -29,6 +29,9 @@ def is_number(x):
         return False
     
 def thermo_finder(eq):
+    """
+    This function parse thermo functions parameters.
+    """
     
     thermo_funs_dict = {}
     pattern = r'thermo\(.*?\)\.\w+'
@@ -104,6 +107,9 @@ def var_extractor(eq):
 #-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-#
 
 def coolprop_transformer(eqs):
+    """
+    This function creates a format dict.
+    """
 
     CP_fluids = CoolProp.get_global_param_string("FluidsList").split(',')
     CP_fluids.append('HumidAir')

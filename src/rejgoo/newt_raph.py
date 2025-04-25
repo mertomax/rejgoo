@@ -115,9 +115,6 @@ def solve_eqs(eqs, vars_id, **kwargs):
     else:
         init_vals = {}
 
-    thermo_init_vals = kwargs['thermo_init_vals']
-    thermo_init_vals.update(init_vals)
-    init_vals = thermo_init_vals
     if 'random_seed' in kwargs.keys():
         np.random.seed(kwargs['random_seed'])
     
