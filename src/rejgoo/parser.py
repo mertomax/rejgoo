@@ -35,6 +35,7 @@ def thermo_finder(eq):
     
     thermo_funs_dict = {}
     pattern = r'thermo\(.*?\)\.\w+'
+    pattern = r'thermo\.\w+\(.*?\)\.\w+'
     finded_paterns = re.findall(pattern, eq)
 
     for finded_patern in finded_paterns:
@@ -43,10 +44,9 @@ def thermo_finder(eq):
             raise Exception("Using nested termo functions is not possible!")
         
         property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
-        all_params = re.findall(r'thermo\((.*?)\)\.\w+', finded_patern)[0]
-        all_params = all_params.split(',')
-        fluid = all_params[0]
-        input_params_and_args = all_params[1:]
+        input_params_and_args = re.findall(r'thermo\.\w+\((.*?)\)\.\w+', finded_patern)[0]
+        input_params_and_args = input_params_and_args.split(',')
+        fluid = re.findall(r'thermo\.(\w+)\(', finded_patern)[0]
         input_params = [param.split('=')[0] for param in input_params_and_args]
         input_args = [arg.split('=')[1] for arg in input_params_and_args]
         input_params_to_args = {param:arg for param, arg in zip(input_params, input_args)}
