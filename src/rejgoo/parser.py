@@ -34,7 +34,6 @@ def thermo_finder(eq):
     """
     
     thermo_funs_dict = {}
-    pattern = r'thermo\(.*?\)\.\w+'
     pattern = r'thermo\.\w+\(.*?\)\.\w+'
     finded_paterns = re.findall(pattern, eq)
 
