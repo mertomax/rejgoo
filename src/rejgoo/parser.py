@@ -27,6 +27,67 @@ def is_number(x):
         return True
     except:
         return False
+
+def thermo_check(fluid, params_args, property, finded_patern):
+    """
+    This function checks that if the requested property of user is valid or not.
+    It also checks that if number of input parameters
+    is right for requested property or not.
+    """
+
+    binary_props = ['Dmolar', 'D', 'Dmass', 'Hmolar', 'H', 'Hmass', 'P',
+    'Q', 'Smolar', 'S', 'Smass', 'T', 'Umolar', 'U', 'Umass',
+    'alpha0', 'alphar', 'A', 'speed_of_sound', 'Bvirial', 'L',
+    'conductivity', 'Cp0mass', 'Cp0molar', 'Cpmolar', 'Cvirial',
+    'Cvmass', 'O', 'Cvmolar', 'C', 'Cpmass', 'd2alpha0_ddelta2_consttau',
+    'd3alpha0_ddelta3_consttau', 'dalpha0_ddelta_consttau',
+    'dalpha0_dtau_constdelta', 'dalphar_ddelta_consttau',
+    'dalphar_dtau_constdelta', 'dBvirial_dT', 'dCvirial_dT',
+    'fundamental_derivative_of_gas_dynamics', 'Gmolar_residual', 'Gmolar',
+    'G', 'Gmass', 'Helmholtzmass', 'Helmholtzmolar', 'Hmolar_residual',
+    'isentropic_expansion_coefficient', 'isobaric_expansion_coefficient',
+    'isothermal_compressibility', 'Phase', 'PIP', 'Prandtl', 'Smolar_residual',
+    'V', 'viscosity', 'Z']
+
+    zero_props = ['acentric', 'FH', 'gas_constant', 'HH', 'M', 'molar_mass',
+    'molarmass', 'molemass', 'p_critical', 'pcrit', 'PH', 'P_max',
+    'pmax','P_min', 'pmin', 'p_triple', 'ptriple', 'p_reducing',
+    'rhocrit', 'rhomass_critical', 'rhomolar_critical',
+    'rhomolar_reducing', 'T_critical', 'Tcrit', 'T_max', 'Tmax', 'T_min',
+    'Tmin', 'TTRIPLE', 'T_triple', 'Ttriple', 'T_reducing']
+
+    humid_props = ['B', 'Twb', 'T_wb', 'WetBulb', 'C', 'cp',
+    'Cha', 'cp_ha', 'CV', 'CVha', 'cv_ha', 'D', 'Tdp', 'DewPoint',
+    'T_dp', 'H', 'Hda', 'Enthalpy', 'Hha', 'K','k', 'Conductivity',
+    'M', 'Visc', 'mu', 'psi_w', 'Y', 'P', 'P_w', 'R', 'RH',
+    'RelHum', 'S', 'Sda', 'Entropy', 'Sha', 'T', 'Tdb', 'T_db',
+    'V', 'Vda', 'Vha', 'W', 'Omega', 'HumRat', 'Z']
+
+    if fluid == 'HumidAir':
+        if len(params_args) != 3:
+            raise Exception("You must provide 3 parameters for HumidAir."\
+                " But you have provided {}, in the {}".format(
+                len(params_args), finded_patern))
+        
+        if property not in humid_props:
+            raise Exception("{} is not a valid property for HumidAir" \
+                " But it is used in {}".format(property, finded_patern))
+        
+    elif property not in zero_props and property not in binary_props:
+        raise Exception("{} is not a valid property for pure fluids."\
+                        " but you have used it in {}".format(
+                            property, finded_patern))
+    
+    elif len(params_args) != 0 and property in zero_props:
+        raise Exception("You must provide 0 parameters for {} property."\
+                        " But you have provided {}, in the {}".format(
+                            property, len(params_args), finded_patern))
+    
+    elif len(params_args) != 2 and property in binary_props:
+        raise Exception("You must provide 2 parameters for {} property."\
+                        " But you have provided {}, in the {}".
+                        format(property, len(params_args), finded_patern))
+    
     
 def thermo_finder(eq):
     """
@@ -43,12 +104,15 @@ def thermo_finder(eq):
             raise Exception("Using nested termo functions is not possible!")
         
         property = re.findall(r'.+\)\.(\w+)', finded_patern)[0]
-        input_params_and_args = re.findall(r'thermo\.\w+\((.*?)\)\.\w+', finded_patern)[0]
-        input_params_and_args = input_params_and_args.split(',')
         fluid = re.findall(r'thermo\.(\w+)\(', finded_patern)[0]
-        input_params = [param.split('=')[0] for param in input_params_and_args]
-        input_args = [arg.split('=')[1] for arg in input_params_and_args]
-        input_params_to_args = {param:arg for param, arg in zip(input_params, input_args)}
+        input_params_and_args = re.findall(r'thermo\.\w+\((.*?)\)\.\w+', finded_patern)[0]
+        if len(input_params_and_args) > 0:
+            input_params_and_args = input_params_and_args.split(',')
+            input_params = [param.split('=')[0] for param in input_params_and_args]
+            input_args = [arg.split('=')[1] for arg in input_params_and_args]
+            input_params_to_args = {param:arg for param, arg in zip(input_params, input_args)}
+        else:
+            input_params_to_args = {}
         
         all_params_dict = {'fluid':fluid, 'property':property, 'params_args':input_params_to_args}
         thermo_funs_dict[finded_patern] = all_params_dict
@@ -110,9 +174,19 @@ def coolprop_transformer(eqs):
     This function creates a format dict.
     """
 
+    def coolprop_rejgoo_fluid_map(cp_format):
+        """
+        This function converts fluids names from Coolplop format to Rejgoo format.
+        """
+        rj_format = cp_format.lower()
+        for char in ('-', '(', ')'):
+            rj_format = rj_format.replace(char, '_')
+        return rj_format
+        
     CP_fluids = CoolProp.get_global_param_string("FluidsList").split(',')
     CP_fluids.append('HumidAir')
-    CP_fluids_lower_to_origin = {fluid.lower():fluid for fluid in CP_fluids}
+
+    fluids_RJ_to_CP = {coolprop_rejgoo_fluid_map(fluid):fluid for fluid in CP_fluids}
 
     map_dict = {}
 
@@ -123,22 +197,13 @@ def coolprop_transformer(eqs):
             property = all_params['property']
 
             parsed_fluid = all_params['fluid']
-            if parsed_fluid.lower() not in CP_fluids_lower_to_origin.keys():
+            if parsed_fluid.lower() not in fluids_RJ_to_CP.keys():
                 raise Exception('{} is not a valid fluid name!'.format(parsed_fluid))
-            fluid = CP_fluids_lower_to_origin[parsed_fluid.lower()]
+            fluid = fluids_RJ_to_CP[parsed_fluid.lower()]
 
             params_args = all_params['params_args']
 
-            if fluid == 'HumidAir':
-                if len(params_args) != 3:
-                    raise Exception("""You must provide 3 parameters for {}
-                                but you have provided {}, in the {}""".
-                                format(fluid, len(params_args), finded_patern))
-
-            elif len(params_args) != 2:
-                raise Exception("""You must provide 2 parameters for {}
-                                but you have provided {}, in the {}""".
-                                format(fluid, len(params_args), finded_patern))
+            thermo_check(fluid, params_args, property, finded_patern)
             
             if fluid == 'HumidAir':
                 transformed_pattern = "CoolProp.HAPropsSI('{}', ".format(property)
