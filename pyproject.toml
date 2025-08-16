@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rejgoo"
-version = "0.0.3"
+version = "0.0.4"
 description = "Python package that solves mathematical equations"
 readme = "README.rst"
 requires-python = ">= 3.10"
@@ -19,7 +19,8 @@ classifiers = [
 ]
 license = {text = "MIT license"}
 dependencies = [
-    "numpy (>=2.2.3,<3.0.0)"
+    "numpy (>=2.2.3,<3.0.0)",
+    "CoolProp (>=6.7.0,<7.0.0)"
 
 ]
 
