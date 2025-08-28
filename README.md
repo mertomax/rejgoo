@@ -11,7 +11,7 @@ Rejgoo is also capable of handling thermodynamic equations🔥: [Thermodynamic P
 CREDITS:
 --------
 
-This project is developed by Mehdi Hajebi, based on the original version developed as his bachelor final project,
+This project is developed by Mahdi Hajebi, based on the original version developed as his bachelor final project,
 titled "Thermodynamics Equation Set Solver", to fulfill for his BSc in mechanical engineering
 at University of Hormozgan under the supervision of Inst. Abdulhamid N.M. Ansari.
 
