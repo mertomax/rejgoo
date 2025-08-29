@@ -15,7 +15,7 @@ A simple code sample is shown below:
 
 from rejgoo.rejgoo import eqs
 
-text = '''
+x = '''
 x**2 + x  = 2
 3*a + 2*b = 16
 -5*a + 5 = -b
@@ -27,4 +27,4 @@ equations = eqs(x)
 
 __author__ = """Mahdi Hajebi"""
 __email__ = 'merto071@yahoo.com'
-__version__ = '0.0.5'
+__version__ = '0.0.6'

@@ -1,7 +1,6 @@
 # REJGOO the equation solver
 
 [![PyPi](https://img.shields.io/pypi/v/rejgoo.svg)](https://pypi.python.org/pypi/rejgoo)
-[![PyPi](https://readthedocs.org/projects/rejgoo/badge/?version=latest)](https://rejgoo.readthedocs.io/en/latest/?version=latest)
 
 Rejgoo is a Python package that solves mathematical equations!
 The main aim of rejgoo is too be the fastest and simplest way to solve system of mathematical equations.
@@ -28,7 +27,7 @@ A simple code sample is shown below:
 ```python
 from rejgoo.rejgoo import eqs
 
-text = """
+x = """
 x**2 + x  = 2
 3*a + 2*b = 16
 -5*a + 5 = -b
